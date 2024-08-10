@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  iris:
+    image: intersystems/iris-community:2024.1
+    container_name: iris
+    init: true
+    ports:
+      - "52773:52773" # Porta para o acesso ao portal
+      - "1972:1972"   # Porta para o acesso ao banco de dados
+    environment:
+      - ISC_DATA_DIRECTORY=/usr/irissys
+      - ISC_PACKAGE_INSTANCENAME=IRIS
+      - ISC_PACKAGE_IRIS_PASSWORD=gjsj1234
+      
+    volumes:
+      - ./data:/usr/irissys/mgr/data
+      - ./logs:/usr/irissys/mgr/logs
+      - ./iris_external:/external
+
+    restart: unless-stopped
+    #command: --password-file /home/irisowner/durable/password/password.txt
+
+  prometheus:
+   image: prom/prometheus:latest
+   container_name: prometheus
+   ports:
+    - "9091:9090"
+   volumes:
+    - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  
+  grafana:
+   image: grafana/grafana:latest
+   container_name: grafana
+   ports:
+    - "3000:3000"
+   #volumes:
+   # - ./grafana:/etc/grafana/
+  
+  
